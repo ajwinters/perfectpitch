@@ -22,6 +22,7 @@ class MainWindow(QMainWindow):
     def mouseDoubleClickEvent(self, e):
         self.label.setText("mouseDoubleClickEvent")
 
+#asd
 
 app = QApplication(sys.argv)
 
