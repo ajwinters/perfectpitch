@@ -1,28 +1,14 @@
 import sys
-
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QApplication, QLabel, QMainWindow, QTextEdit
-
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget
+from PyQt5.QtGui import QPalette, QColor
 
 class MainWindow(QMainWindow):
+
     def __init__(self):
-        super().__init__()
-        self.label = QLabel("Click in this window")
-        self.setCentralWidget(self.label)
+        super(MainWindow, self).__init__()
 
-    def mouseMoveEvent(self, e):
-        self.label.setText("mouseMoveEvent")
+        self.setWindowTitle("My App")
 
-    def mousePressEvent(self, e):
-        self.label.setText("mousePressEvent")
-
-    def mouseReleaseEvent(self, e):
-        self.label.setText("mouseReleaseEvent")
-
-    def mouseDoubleClickEvent(self, e):
-        self.label.setText("mouseDoubleClickEvent")
-
-#asdfsdfdd
 
 app = QApplication(sys.argv)
 
