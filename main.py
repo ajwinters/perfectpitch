@@ -10,6 +10,8 @@ Notes = ["A","A#/Bb","B","C","C#/Db","D","D#/Eb","E","F","F#/Gb","G"]
 class CustomButton(QPushButton):
         def mousePressEvent(self, e):
             e.accept()
+        if e.button() == Qt.LeftButton:
+            self.label.setText("mouseReleaseEvent LEFT")
 
 class Color(QWidget):
 
