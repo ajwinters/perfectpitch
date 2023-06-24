@@ -1,6 +1,9 @@
 import pygame
 import time
 import pygame.midi
+from PyQt5.QtCore import *
+from PyQt5.QtGui  import *
+from PyQt5.QtWidgets import *
 
 # mixer config
 # freq = 44100  # audio CD quality
@@ -18,14 +21,14 @@ player.set_instrument(1,1) #127 is max
 
 major=[0,4,7,12]
 
-
-      
 def go(note):
-    run = True
-    while run:
-    player.note_on(note, 127,1)
-    time.sleep(1)
-    player.note_off(note,127,1)
+    player.note_on(note, 127, 1)
+    QTimer.singleShot(1000, lambda: player.note_off(note, 127, 1))
+
+# def go(note):
+#     player.note_on(note, 127,1)
+#     time.sleep(1)
+#     player.note_off(note,127,1)
 
 # def arp(base,ints):
 #     for n in ints:

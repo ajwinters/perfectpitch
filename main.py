@@ -1,5 +1,6 @@
 import sys
 import pygame
+import time
 from PyQt5.QtCore import *
 from PyQt5.QtGui  import *
 from PyQt5.QtWidgets import *
@@ -10,10 +11,8 @@ import chromatic_player
 lowO= 3
 highO = 5
 Octaves = list(range(lowO,highO+1))
-#Notes = ["A","A#/Bb","B","C","C#/Db","D","D#/Eb","E","F","F#/Gb","G"]
-Notes = ["C","C#","D","D#","E","F","F#","G","A","A#","B"]
-global glo
-glo=0
+Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
+
 
 class CustomButton(QPushButton):
     def __init__(self, text='',octave='', parent=None):
@@ -26,15 +25,12 @@ class CustomButton(QPushButton):
         
     
     def button_show(self):
-        self.clicked.connect(self.on_click)
+       self.clicked.connect(self.on_click)
 
     def on_click(self):
         chromatic_player.go(int(Notes.index(self.text[:-1]))+12*self.octave)
-        print("User Clicked Me")
-
-    def the_button_was_clicked(self):
         print(self.text)
-        print(glo + 1)
+        
 
 
 class Color(QWidget):
@@ -65,7 +61,7 @@ class MainWindow(QMainWindow):
             layoutTemp = QVBoxLayout()
             for i in Notes:
                 buttontemp = CustomButton("{}{}".format(i,j),j)
-                buttontemp.clicked.connect(buttontemp.the_button_was_clicked)
+                #buttontemp.clicked.connect(buttontemp.on_click)
                 layoutTemp.addWidget(buttontemp)
             layout1.addLayout(layoutTemp)
         
