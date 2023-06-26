@@ -1,35 +1,51 @@
 import pygame
-import glob
+import time
+import pygame.midi
+from PyQt5.QtCore import *
+from PyQt5.QtGui  import *
+from PyQt5.QtWidgets import *
 
 # mixer config
-freq = 44100  # audio CD quality
-bitsize = -16   # unsigned 16 bit
-channels = 2  # 1 is mono, 2 is stereo
-buffer = 1024   # number of samples
-pygame.mixer.init(freq, bitsize, channels, buffer)
-pygame.mixer.music.set_volume(0.8)
+# freq = 44100  # audio CD quality
+# bitsize = -16   # unsigned 16 bit
+# channels = 2  # 1 is mono, 2 is stereo
+# buffer = 1024   # number of samples
+# pygame.mixer.init(freq, bitsize, channels, buffer)
+# pygame.mixer.music.set_volume(0.8)
 
+pygame.midi.init()
+fps = 60
+timer = pygame.time.Clock()
+player= pygame.midi.Output(0)
+player.set_instrument(1,1) #127 is max
 
-def play_music(midi_filename):
-  '''Stream music_file in a blocking manner'''
-  # listen for interruptions
-  try:
-    clock = pygame.time.Clock()
-    pygame.mixer.music.load(midi_filename)
-    pygame.mixer.music.play()
-    while pygame.mixer.music.get_busy():
-        clock.tick(30) # check if playback has finished
-  except:
-    # if user hits Ctrl/C then exit
-    # (works only in console mode)
-    pygame.mixer.music.fadeout(1000)
-    pygame.mixer.music.stop()
-    raise SystemExit
+major=[0,4,7,12]
 
-# gl = glob.glob(r"C:\Users\Alex\Google Drive\Projects\perfectpitch\mynotes\*.mid")
+def go(note):
+    player.note_on(note, 127, 1)
+    QTimer.singleShot(1000, lambda: player.note_off(note, 127, 1))
 
-# midi_filename = r"C:\Users\Alex\Google Drive\Projects\perfectpitch\mynotes\A-2.mid"
+# def go(note):
+#     player.note_on(note, 127,1)
+#     time.sleep(1)
+#     player.note_off(note,127,1)
 
-# for i in gl:
-#     play_music(i)
+# def arp(base,ints):
+#     for n in ints:
+#         go(base+n)
 
+# def chord(base, ints):
+#     player.note_on(base,127,1)
+#     player.note_on(base+ints[1],127,1)
+#     player.note_on(base+ints[2],127,1)
+#     player.note_on(base+ints[3],127,1)
+#     time.sleep(1)
+#     player.note_off(base,127,1)
+#     player.note_off(base+ints[1],127,1)
+#     player.note_off(base+ints[2],127,1)
+#     player.note_off(base+ints[3],127,1)
+
+def end():
+       pygame.quit()
+
+#go(61)
