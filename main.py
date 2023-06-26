@@ -20,6 +20,7 @@ class CustomButton(QPushButton):
         self.text = text
         super(QPushButton, self).__init__(text, parent=parent)
         self.setGeometry(QRect(30, 40, 41, 41))
+        #self.setStyleSheet('background-color: green')
         self.button_show()
         self.setId = self.text
         
@@ -28,6 +29,8 @@ class CustomButton(QPushButton):
        self.clicked.connect(self.on_click)
 
     def on_click(self):
+        #self.setStyleSheet('background-color: red')
+        self.setEnabled(False)
         chromatic_player.go(int(Notes.index(self.text[:-1]))+12*self.octave)
         print(self.text)
         
@@ -50,12 +53,20 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("My App")
 
         layout1 = QHBoxLayout()
-        layout3 = QGridLayout()
         layout1.setContentsMargins(0,0,0,0)
         layout1.setSpacing(5)
-        layout1.addWidget(Color('green'))
-        layout3.addWidget(Color('red'))
-        layout3.addWidget(Color('purple'))
+
+        playbutton = QPushButton("s")
+
+        layoutplay = QHBoxLayout()
+        layoutpicks = QVBoxLayout()
+        layoutpicks.addWidget(playbutton)
+
+        for i in Notes:
+            buttontemp = QPushButton("{}".format(i))
+            layoutpicks.addWidget(buttontemp)
+        layout1.addLayout(layoutplay)
+        layout1.addLayout(layoutpicks)
 
         for j in Octaves:
             layoutTemp = QVBoxLayout()
@@ -65,7 +76,6 @@ class MainWindow(QMainWindow):
                 layoutTemp.addWidget(buttontemp)
             layout1.addLayout(layoutTemp)
         
-        layout1.addLayout( layout3 )
         widget = QWidget()
         widget.setLayout(layout1)
         self.setCentralWidget(widget)
