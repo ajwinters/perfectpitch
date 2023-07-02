@@ -8,6 +8,7 @@ import chromatic_player
 from random import randrange, uniform
 
 #small change for new branch
+# on master check? 
 
 lowO= 2
 highO = 7
