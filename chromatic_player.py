@@ -16,14 +16,14 @@ from PyQt5.QtWidgets import *
 pygame.midi.init()
 fps = 60
 timer = pygame.time.Clock()
-player= pygame.midi.Output(0)
-player.set_instrument(1,1) #127 is max
+# #player= pygame.midi.Output(0)
+# player.set_instrument(1,1) #127 is max
 
-major=[0,4,7,12]
+# major=[0,4,7,12]
 
-def go(note):
-    player.note_on(note, 127, 1)
-    QTimer.singleShot(1000, lambda: player.note_off(note, 127, 1))
+# def go(note):
+#     player.note_on(note, 127, 1)
+#     QTimer.singleShot(1000, lambda: player.note_off(note, 127, 1))
 
 # def go(note):
 #     player.note_on(note, 127,1)

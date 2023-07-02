@@ -1,9 +1,7 @@
 import pygame
 import time
 import pygame.midi
+from random import randrange, uniform
 
-Notes = ["C","C#","D","D#","E","F","F#","G","A","A#","B"]
-
-print()
-
-print("C#4"[:-1])
+irand = randrange(4,9)
+print(irand)
