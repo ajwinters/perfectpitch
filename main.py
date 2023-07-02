@@ -5,44 +5,37 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui  import *
 from PyQt5.QtWidgets import *
 import chromatic_player
+from random import randrange, uniform
 
 #small change for new branch
 
-lowO= 3
-highO = 5
+lowO= 2
+highO = 7
 Octaves = list(range(lowO,highO+1))
 Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
+class Player(object):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        pygame.midi.init()
+        self.pygame_player = pygame.midi.Output(0)
+        self.pygame_player.set_instrument(1, 1)
+
+    def play(self, note):
+        self.pygame_player.note_on(note, 127, 1)
+        QTimer.singleShot(1000, lambda:
+            self.pygame_player.note_off(note, 127, 1))
 
 class CustomButton(QPushButton):
-    def __init__(self, text='',octave='', parent=None):
-        self.octave = octave
-        self.text = text
-        super(QPushButton, self).__init__(text, parent=parent)
-        self.setGeometry(QRect(30, 40, 41, 41))
-        #self.setStyleSheet('background-color: green')
-        self.button_show()
-        self.setId = self.text
-        
-    
-    def button_show(self):
-       self.clicked.connect(self.on_click)
+    playNote = pyqtSignal(int)
+    def __init__(self, note, octave, parent=None):
+        text = Notes[note] + str(octave)
+        super().__init__(text, parent=parent)
+        self.note = note + 12 * octave
+        self.clicked.connect(self.emitSignal)
 
-    def on_click(self):
-        #self.setStyleSheet('background-color: red')
-        self.setEnabled(False)
-        chromatic_player.go(int(Notes.index(self.text[:-1]))+12*self.octave)
-        print(self.text)
-        
-
-
-class Color(QWidget):
-    def __init__(self, color):
-        super(Color, self).__init__()
-        self.setAutoFillBackground(True)
-        palette = self.palette()
-        palette.setColor(QPalette.Window, QColor(color))
-        self.setPalette(palette)
+    def emitSignal(self):
+        self.playNote.emit(self.note)
 
 
 class MainWindow(QMainWindow):
@@ -52,33 +45,50 @@ class MainWindow(QMainWindow):
 
         self.setWindowTitle("My App")
 
-        layout1 = QHBoxLayout()
-        layout1.setContentsMargins(0,0,0,0)
-        layout1.setSpacing(5)
+        self.player = Player()
+        self.currentnote = None
 
-        playbutton = QPushButton("s")
-
+        mainLayout = QVBoxLayout()
+        mainLayout.setContentsMargins(0, 0, 0, 0)
+    
         layoutplay = QHBoxLayout()
-        layoutpicks = QVBoxLayout()
+        layoutpicks = QHBoxLayout()
+        playbutton = QPushButton("Play Again")
+
         layoutpicks.addWidget(playbutton)
+        mainLayout.addLayout(layoutplay)
+        mainLayout.addLayout(layoutpicks)
+        mainLayout.addWidget(playbutton)
+        playbutton.clicked.connect(self.playnext)
+
+        buttonLayout = QGridLayout()
+        mainLayout.addLayout(buttonLayout)
+
+        rightLayout = QVBoxLayout()
+        mainLayout.addLayout(rightLayout)
+
+ 
 
         for i in Notes:
             buttontemp = QPushButton("{}".format(i))
             layoutpicks.addWidget(buttontemp)
-        layout1.addLayout(layoutplay)
-        layout1.addLayout(layoutpicks)
-
-        for j in Octaves:
-            layoutTemp = QVBoxLayout()
-            for i in Notes:
-                buttontemp = CustomButton("{}{}".format(i,j),j)
-                #buttontemp.clicked.connect(buttontemp.on_click)
-                layoutTemp.addWidget(buttontemp)
-            layout1.addLayout(layoutTemp)
+ 
+        ### Adding playable board of buttons
+        column = 0
+        for j in range(lowO, highO + 1):
+            for i in range(12):
+                buttontemp = CustomButton(i, j)
+                buttonLayout.addWidget(buttontemp, i, column)
+                buttontemp.playNote.connect(self.player.play)
+            column += 1
         
         widget = QWidget()
-        widget.setLayout(layout1)
+        widget.setLayout(mainLayout)
         self.setCentralWidget(widget)
+
+    def playnext(self):
+        random_note = randrange(12 * lowO,12*highO)
+        self.player.play(random_note)
 
 app = QApplication(sys.argv)
 w = MainWindow()
