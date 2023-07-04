@@ -88,21 +88,29 @@ class MainWindow(QMainWindow):
         rightLayout = QVBoxLayout()
         mainLayout.addLayout(rightLayout)
 
- 
+        mybg = QButtonGroup(mainLayout)
 
         for i in range(12):
             buttontemp1 = ChoiceButton(i)
             buttontemp1.broadNote.connect(self.check)
             layoutpicks.addWidget(buttontemp1)
             self.saveButton(buttontemp1)
-        for k,v in self.button_map.items():
-            print(v)
-            self.button_map[k].pressed.connect(lambda i=Notes.index(k) : v.changecolor(i,self.random_note))
+            mybg.addButton(buttontemp1,i)
+            print(i)
+            print(mybg.button(1))
+
+        for i in range(12):
+            mybg.button(i).pressed.connect(lambda i=i : mybg.button(i).changecolor(i,self.random_note))
+
+        # for k,v in self.button_map.items():
+        #     #print(v)
+        #     self.button_map[k].pressed.connect(lambda i=Notes.index(k) : v.changecolor(i,self.random_note))
 
             
  
         ### Adding playable board of buttons
         column = 0
+
         for j in range(lowO, highO + 1):
             for i in range(12):
                 buttontemp = PlayBoardButton(i, j)
@@ -119,7 +127,7 @@ class MainWindow(QMainWindow):
     def playnext(self):
         self.random_note = randrange(12 * lowO,12*highO)
         self.player.play(self.random_note)
-        print(self.random_note)
+        print(self.random_note%12)
 
     def check(self,note):
         if self.random_note % 12 == note:
