@@ -27,7 +27,7 @@ class Player(object):
         QTimer.singleShot(1000, lambda:
             self.pygame_player.note_off(note, 127, 1))
 
-class CustomButton(QPushButton):
+class PlayBoardButton(QPushButton):
     playNote = pyqtSignal(int)
     def __init__(self, note, octave, parent=None):
         text = Notes[note] + str(octave)
@@ -38,28 +38,48 @@ class CustomButton(QPushButton):
     def emitSignal(self):
         self.playNote.emit(self.note)
 
+class ChoiceButton(QPushButton):
+    broadNote = pyqtSignal(int)
+    def __init__(self, note, parent=None):
+        text = Notes[note]
+        super().__init__(text, parent=parent)
+        self.note = note
+        self.clicked.connect(self.emitSignal)
+
+
+    def emitSignal(self):
+        self.broadNote.emit(self.note)
+
+    def changecolor(self,x,y):
+        print("x",x)
+        print("y",y)
+        print(y%12)
+        if (y%12==x):
+            self.setStyleSheet("background-color: green")
+        self.setStyleSheet("background-color: green")  
+
+
 
 class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        self.setWindowTitle("My App")
-
+        self.setWindowTitle("Perfect Pitch Training")
+        self.random_note = randrange(12 * lowO,12*highO)
+        self.correct = None
         self.player = Player()
-        self.currentnote = None
 
         mainLayout = QVBoxLayout()
         mainLayout.setContentsMargins(0, 0, 0, 0)
-    
+
         layoutplay = QHBoxLayout()
         layoutpicks = QHBoxLayout()
         playbutton = QPushButton("Play Again")
 
-        layoutpicks.addWidget(playbutton)
+        layoutplay.addWidget(playbutton)
         mainLayout.addLayout(layoutplay)
         mainLayout.addLayout(layoutpicks)
-        mainLayout.addWidget(playbutton)
         playbutton.clicked.connect(self.playnext)
 
         buttonLayout = QGridLayout()
@@ -70,17 +90,22 @@ class MainWindow(QMainWindow):
 
  
 
-        for i in Notes:
-            buttontemp = QPushButton("{}".format(i))
-            layoutpicks.addWidget(buttontemp)
+        for i in range(12):
+            buttontemp1 = ChoiceButton(i)
+            buttontemp1.broadNote.connect(self.check)
+            buttontemp1.pressed.connect(lambda var=i: buttontemp1.changecolor(var,self.random_note))
+            layoutpicks.addWidget(buttontemp1)
+            
  
         ### Adding playable board of buttons
         column = 0
         for j in range(lowO, highO + 1):
             for i in range(12):
-                buttontemp = CustomButton(i, j)
+                buttontemp = PlayBoardButton(i, j)
                 buttonLayout.addWidget(buttontemp, i, column)
                 buttontemp.playNote.connect(self.player.play)
+                
+            
             column += 1
         
         widget = QWidget()
@@ -88,8 +113,19 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
     def playnext(self):
-        random_note = randrange(12 * lowO,12*highO)
-        self.player.play(random_note)
+        self.random_note = randrange(12 * lowO,12*highO)
+        self.player.play(self.random_note)
+
+    def check(self,note):
+        if self.random_note % 12 == note:
+            print("correct")
+            self.correct == True
+        else:
+            self.correct == False
+
+
+    
+
 
 app = QApplication(sys.argv)
 w = MainWindow()
