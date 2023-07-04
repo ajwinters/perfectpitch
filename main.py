@@ -56,7 +56,6 @@ class ChoiceButton(QPushButton):
         print(y%12)
         if (y%12==x):
             self.setStyleSheet("background-color: green")
-        self.setStyleSheet("background-color: green")  
 
 
 
@@ -64,6 +63,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
+        self.button_map = {}
 
         self.setWindowTitle("Perfect Pitch Training")
         self.random_note = randrange(12 * lowO,12*highO)
@@ -93,8 +93,12 @@ class MainWindow(QMainWindow):
         for i in range(12):
             buttontemp1 = ChoiceButton(i)
             buttontemp1.broadNote.connect(self.check)
-            buttontemp1.pressed.connect(lambda var=i: buttontemp1.changecolor(var,self.random_note))
             layoutpicks.addWidget(buttontemp1)
+            self.saveButton(buttontemp1)
+        for k,v in self.button_map.items():
+            print(v)
+            self.button_map[k].pressed.connect(lambda i=Notes.index(k) : v.changecolor(i,self.random_note))
+
             
  
         ### Adding playable board of buttons
@@ -115,6 +119,7 @@ class MainWindow(QMainWindow):
     def playnext(self):
         self.random_note = randrange(12 * lowO,12*highO)
         self.player.play(self.random_note)
+        print(self.random_note)
 
     def check(self,note):
         if self.random_note % 12 == note:
@@ -122,6 +127,13 @@ class MainWindow(QMainWindow):
             self.correct == True
         else:
             self.correct == False
+
+    def saveButton(self,obj):
+         self.button_map[obj.text()] = obj
+
+    def findButtonByText(self,text):
+         return self.button_map[text]
+    
 
 
     
