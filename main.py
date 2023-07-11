@@ -54,8 +54,13 @@ class ChoiceButton(QPushButton):
         print("x",x)
         print("y",y)
         print(y%12)
-        if (y%12==x):
-            self.setStyleSheet("background-color: green")
+        if not (y%12==x):
+            self.setStyleSheet("background-color: red")
+            self.setEnabled(False)
+    
+    def reset(self):
+        self.setStyleSheet("background-color: green")
+        self.setEnabled(True)
 
 
 
@@ -88,19 +93,19 @@ class MainWindow(QMainWindow):
         rightLayout = QVBoxLayout()
         mainLayout.addLayout(rightLayout)
 
-        mybg = QButtonGroup(mainLayout)
+        self.mybg = QButtonGroup(mainLayout)
 
         for i in range(12):
             buttontemp1 = ChoiceButton(i)
             buttontemp1.broadNote.connect(self.check)
             layoutpicks.addWidget(buttontemp1)
             self.saveButton(buttontemp1)
-            mybg.addButton(buttontemp1,i)
+            self.mybg.addButton(buttontemp1,i)
             print(i)
-            print(mybg.button(1))
+            print(self.mybg.button(1))
 
         for i in range(12):
-            mybg.button(i).pressed.connect(lambda i=i : mybg.button(i).changecolor(i,self.random_note))
+            self.mybg.button(i).pressed.connect(lambda i=i : self.mybg.button(i).changecolor(i,self.random_note))
 
         # for k,v in self.button_map.items():
         #     #print(v)
@@ -133,6 +138,9 @@ class MainWindow(QMainWindow):
         if self.random_note % 12 == note:
             print("correct")
             self.correct == True
+            for i in range(12):
+                #self.mybg.button(i).setEnabled(True)
+                self.mybg.button(i).reset()
         else:
             self.correct == False
 
