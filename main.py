@@ -1,5 +1,7 @@
 import sys
 import pygame
+import pandas as pd
+import numpy as np
 import time
 from PyQt5.QtCore import *
 from PyQt5.QtGui  import *
@@ -20,11 +22,12 @@ class Player(object):
         super().__init__(*args, **kwargs)
         pygame.midi.init()
         self.pygame_player = pygame.midi.Output(0)
-        self.pygame_player.set_instrument(1, 1)
+        
 
-    def play(self, note):
+    def play(self, note,instrument=1):
+        self.pygame_player.set_instrument(instrument, 1)
         self.pygame_player.note_on(note, 127, 1)
-        QTimer.singleShot(1000, lambda:
+        QTimer.singleShot(5000, lambda:
             self.pygame_player.note_off(note, 127, 1))
 
 class PlayBoardButton(QPushButton):
@@ -44,6 +47,7 @@ class ChoiceButton(QPushButton):
         text = Notes[note]
         super().__init__(text, parent=parent)
         self.note = note
+        self.instrument = 1
         self.clicked.connect(self.emitSignal)
 
 
@@ -55,11 +59,11 @@ class ChoiceButton(QPushButton):
         print("y",y)
         print(y%12)
         if not (y%12==x):
-            self.setStyleSheet("background-color: red")
+            #self.setStyleSheet("background-color: red")
             self.setEnabled(False)
     
     def reset(self):
-        self.setStyleSheet("background-color: green")
+        #self.setStyleSheet("background-color: green")
         self.setEnabled(True)
 
 
@@ -73,6 +77,7 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Perfect Pitch Training")
         self.random_note = randrange(12 * lowO,12*highO)
         self.correct = None
+        self.instrument = 1
         self.player = Player()
 
         mainLayout = QVBoxLayout()
@@ -85,7 +90,7 @@ class MainWindow(QMainWindow):
         layoutplay.addWidget(playbutton)
         mainLayout.addLayout(layoutplay)
         mainLayout.addLayout(layoutpicks)
-        playbutton.clicked.connect(self.playnext)
+        playbutton.clicked.connect(self.playagain)
 
         buttonLayout = QGridLayout()
         mainLayout.addLayout(buttonLayout)
@@ -99,19 +104,12 @@ class MainWindow(QMainWindow):
             buttontemp1 = ChoiceButton(i)
             buttontemp1.broadNote.connect(self.check)
             layoutpicks.addWidget(buttontemp1)
-            self.saveButton(buttontemp1)
+            #self.saveButton(buttontemp1)
             self.mybg.addButton(buttontemp1,i)
-            print(i)
-            print(self.mybg.button(1))
+
 
         for i in range(12):
             self.mybg.button(i).pressed.connect(lambda i=i : self.mybg.button(i).changecolor(i,self.random_note))
-
-        # for k,v in self.button_map.items():
-        #     #print(v)
-        #     self.button_map[k].pressed.connect(lambda i=Notes.index(k) : v.changecolor(i,self.random_note))
-
-            
  
         ### Adding playable board of buttons
         column = 0
@@ -121,6 +119,7 @@ class MainWindow(QMainWindow):
                 buttontemp = PlayBoardButton(i, j)
                 buttonLayout.addWidget(buttontemp, i, column)
                 buttontemp.playNote.connect(self.player.play)
+                buttontemp.playNote.connect(self.tag)
                 
             
             column += 1
@@ -131,18 +130,28 @@ class MainWindow(QMainWindow):
 
     def playnext(self):
         self.random_note = randrange(12 * lowO,12*highO)
-        self.player.play(self.random_note)
+        self.player.play(self.random_note,self.instrument)
         print(self.random_note%12)
+
+    def playagain(self):
+        self.player.play(self.random_note,self.instrument)
 
     def check(self,note):
         if self.random_note % 12 == note:
             print("correct")
             self.correct == True
+            
             for i in range(12):
-                #self.mybg.button(i).setEnabled(True)
                 self.mybg.button(i).reset()
+
+            self.tag = False
+
+            self.playnext()
         else:
             self.correct == False
+
+    def tag(self):
+        self.tag = True
 
     def saveButton(self,obj):
          self.button_map[obj.text()] = obj
