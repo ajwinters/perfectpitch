@@ -1,21 +1,21 @@
 import sys
 import pygame
+import pygame.midi
 import pandas as pd
 import numpy as np
 import time
 from PyQt5.QtCore import *
 from PyQt5.QtGui  import *
 from PyQt5.QtWidgets import *
-import chromatic_player
+#import chromatic_player
 from random import randrange, uniform
-
-#small change for new branch
-# on master check? 
+import datetime;
 
 lowO= 2
 highO = 7
 Octaves = list(range(lowO,highO+1))
 Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
+
 
 class Player(object):
     def __init__(self, *args, **kwargs):
@@ -47,18 +47,20 @@ class ChoiceButton(QPushButton):
         text = Notes[note]
         super().__init__(text, parent=parent)
         self.note = note
-        self.instrument = 1
         self.clicked.connect(self.emitSignal)
+        self.setFixedHeight(100)
+        self.setFixedWidth(100)
 
 
     def emitSignal(self):
         self.broadNote.emit(self.note)
 
     def changecolor(self,x,y):
-        print("x",x)
-        print("y",y)
-        print(y%12)
+        # print("x",x)
+        # print("y",y)
+        # print(y%12)
         if not (y%12==x):
+            print(1)
             #self.setStyleSheet("background-color: red")
             self.setEnabled(False)
     
@@ -72,13 +74,11 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super(MainWindow, self).__init__()
-        self.button_map = {}
-
         self.setWindowTitle("Perfect Pitch Training")
         self.random_note = randrange(12 * lowO,12*highO)
+        self.guess = None
         self.correct = None
-        self.instrument = 1
-        self.player = Player()
+        self.player = Player()    
 
         mainLayout = QVBoxLayout()
         mainLayout.setContentsMargins(0, 0, 0, 0)
@@ -86,22 +86,29 @@ class MainWindow(QMainWindow):
         layoutplay = QHBoxLayout()
         layoutpicks = QHBoxLayout()
         playbutton = QPushButton("Play Again")
-
+        playbutton.resize(200,100)
+        playbutton.setMinimumHeight(50)
+        playbutton.setMaximumWidth(100)
         layoutplay.addWidget(playbutton)
+
+
+        verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Expanding)
+
         mainLayout.addLayout(layoutplay)
         mainLayout.addLayout(layoutpicks)
+        mainLayout.addItem(verticalSpacer)
+
+
         playbutton.clicked.connect(self.playagain)
 
         buttonLayout = QGridLayout()
         mainLayout.addLayout(buttonLayout)
 
-        rightLayout = QVBoxLayout()
-        mainLayout.addLayout(rightLayout)
-
         self.mybg = QButtonGroup(mainLayout)
 
         for i in range(12):
             buttontemp1 = ChoiceButton(i)
+
             buttontemp1.broadNote.connect(self.check)
             layoutpicks.addWidget(buttontemp1)
             #self.saveButton(buttontemp1)
@@ -111,18 +118,12 @@ class MainWindow(QMainWindow):
         for i in range(12):
             self.mybg.button(i).pressed.connect(lambda i=i : self.mybg.button(i).changecolor(i,self.random_note))
  
-        ### Adding playable board of buttons
-        column = 0
-
         for j in range(lowO, highO + 1):
             for i in range(12):
                 buttontemp = PlayBoardButton(i, j)
-                buttonLayout.addWidget(buttontemp, i, column)
+                buttonLayout.addWidget(buttontemp, i, j)
                 buttontemp.playNote.connect(self.player.play)
-                buttontemp.playNote.connect(self.tag)
-                
-            
-            column += 1
+
         
         widget = QWidget()
         widget.setLayout(mainLayout)
@@ -130,38 +131,31 @@ class MainWindow(QMainWindow):
 
     def playnext(self):
         self.random_note = randrange(12 * lowO,12*highO)
-        self.player.play(self.random_note,self.instrument)
+        self.player.play(self.random_note)
         print(self.random_note%12)
 
     def playagain(self):
-        self.player.play(self.random_note,self.instrument)
+        self.player.play(self.random_note)
 
     def check(self,note):
+        self.guess = note
+        self.senddf()
         if self.random_note % 12 == note:
+            ## upkeep
             print("correct")
             self.correct == True
-            
+
+            ## reset
             for i in range(12):
                 self.mybg.button(i).reset()
-
-            self.tag = False
 
             self.playnext()
         else:
             self.correct == False
 
-    def tag(self):
-        self.tag = True
-
-    def saveButton(self,obj):
-         self.button_map[obj.text()] = obj
-
-    def findButtonByText(self,text):
-         return self.button_map[text]
-    
-
-
-    
+    def senddf(self):
+        df = pd.DataFrame({"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"time":[datetime.datetime.now()]})
+        df.to_csv('data.csv', mode='a', header=False,index=None)
 
 
 app = QApplication(sys.argv)
