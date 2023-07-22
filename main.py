@@ -7,8 +7,7 @@ import time
 from PyQt5.QtCore import *
 from PyQt5.QtGui  import *
 from PyQt5.QtWidgets import *
-#import chromatic_player
-from random import randrange, uniform
+from random import randrange
 import datetime;
 
 lowO= 2
@@ -56,13 +55,10 @@ class ChoiceButton(QPushButton):
         self.broadNote.emit(self.note)
 
     def changecolor(self,x,y):
-        # print("x",x)
-        # print("y",y)
-        # print(y%12)
         if not (y%12==x):
             print(1)
-            #self.setStyleSheet("background-color: red")
-            self.setEnabled(False)
+            self.setStyleSheet("background-color: red")
+            #self.setEnabled(False)
     
     def reset(self):
         #self.setStyleSheet("background-color: green")
@@ -90,6 +86,7 @@ class MainWindow(QMainWindow):
         playbutton.setMinimumHeight(50)
         playbutton.setMaximumWidth(100)
         layoutplay.addWidget(playbutton)
+        playbutton.clicked.connect(self.playagain)
 
 
         verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Expanding)
@@ -97,9 +94,6 @@ class MainWindow(QMainWindow):
         mainLayout.addLayout(layoutplay)
         mainLayout.addLayout(layoutpicks)
         mainLayout.addItem(verticalSpacer)
-
-
-        playbutton.clicked.connect(self.playagain)
 
         buttonLayout = QGridLayout()
         mainLayout.addLayout(buttonLayout)
@@ -111,7 +105,6 @@ class MainWindow(QMainWindow):
 
             buttontemp1.broadNote.connect(self.check)
             layoutpicks.addWidget(buttontemp1)
-            #self.saveButton(buttontemp1)
             self.mybg.addButton(buttontemp1,i)
 
 
