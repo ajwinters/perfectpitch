@@ -17,14 +17,15 @@ Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
 
 class Player(object):
-    def __init__(self, *args, **kwargs):
+    def __init__(self,instrument, *args, **kwargs):
+        self.instrument = instrument
         super().__init__(*args, **kwargs)
         pygame.midi.init()
         self.pygame_player = pygame.midi.Output(0)
         
 
-    def play(self, note,instrument=1):
-        self.pygame_player.set_instrument(instrument, 1)
+    def play(self, note):
+        self.pygame_player.set_instrument(self.instrument, 1)
         self.pygame_player.note_on(note, 127, 1)
         QTimer.singleShot(5000, lambda:
             self.pygame_player.note_off(note, 127, 1))
@@ -56,9 +57,9 @@ class ChoiceButton(QPushButton):
 
     def changecolor(self,x,y):
         if not (y%12==x):
-            print(1)
-            self.setStyleSheet("background-color: red")
+            #self.setStyleSheet("background-color: red")
             #self.setEnabled(False)
+            pass
     
     def reset(self):
         #self.setStyleSheet("background-color: green")
@@ -74,7 +75,7 @@ class MainWindow(QMainWindow):
         self.random_note = randrange(12 * lowO,12*highO)
         self.guess = None
         self.correct = None
-        self.player = Player()    
+        self.player = Player(1)    
 
         mainLayout = QVBoxLayout()
         mainLayout.setContentsMargins(0, 0, 0, 0)
@@ -102,15 +103,12 @@ class MainWindow(QMainWindow):
 
         for i in range(12):
             buttontemp1 = ChoiceButton(i)
-
-            buttontemp1.broadNote.connect(self.check)
             layoutpicks.addWidget(buttontemp1)
             self.mybg.addButton(buttontemp1,i)
 
-
-        for i in range(12):
             self.mybg.button(i).pressed.connect(lambda i=i : self.mybg.button(i).changecolor(i,self.random_note))
- 
+            self.mybg.button(i).pressed.connect(lambda i=i : self.mybg.button(i).broadNote.connect(self.check))
+
         for j in range(lowO, highO + 1):
             for i in range(12):
                 buttontemp = PlayBoardButton(i, j)
@@ -144,6 +142,7 @@ class MainWindow(QMainWindow):
 
             self.playnext()
         else:
+            self.mybg.button(note).setEnabled(False)
             self.correct == False
 
     def senddf(self):
