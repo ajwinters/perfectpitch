@@ -16,6 +16,7 @@ Octaves = list(range(lowO,highO+1))
 Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
 
+
 class Player(object):
     def __init__(self,instrument, *args, **kwargs):
         self.instrument = instrument
@@ -51,18 +52,10 @@ class ChoiceButton(QPushButton):
         self.setFixedHeight(100)
         self.setFixedWidth(100)
 
-
     def emitSignal(self):
         self.broadNote.emit(self.note)
-
-    def changecolor(self,x,y):
-        if not (y%12==x):
-            #self.setStyleSheet("background-color: red")
-            #self.setEnabled(False)
-            pass
     
     def reset(self):
-        #self.setStyleSheet("background-color: green")
         self.setEnabled(True)
 
 
@@ -106,8 +99,8 @@ class MainWindow(QMainWindow):
             layoutpicks.addWidget(buttontemp1)
             self.mybg.addButton(buttontemp1,i)
 
-            self.mybg.button(i).pressed.connect(lambda i=i : self.mybg.button(i).changecolor(i,self.random_note))
-            self.mybg.button(i).pressed.connect(lambda i=i : self.mybg.button(i).broadNote.connect(self.check))
+            #self.mybg.button(i).pressed.connect(lambda i=i : self.mybg.button(i).changecolor(i,self.random_note))
+            self.mybg.button(i).released.connect(lambda i=i : self.mybg.button(i).broadNote.connect(self.check))
 
         for j in range(lowO, highO + 1):
             for i in range(12):
@@ -122,28 +115,24 @@ class MainWindow(QMainWindow):
 
     def playnext(self):
         self.random_note = randrange(12 * lowO,12*highO)
+        self.random_note = 48
         self.player.play(self.random_note)
-        print(self.random_note%12)
+        print(Notes[self.random_note%12])
 
     def playagain(self):
         self.player.play(self.random_note)
 
     def check(self,note):
-        self.guess = note
         self.senddf()
         if self.random_note % 12 == note:
-            ## upkeep
             print("correct")
-            self.correct == True
-
             ## reset
             for i in range(12):
                 self.mybg.button(i).reset()
-
+            
             self.playnext()
         else:
             self.mybg.button(note).setEnabled(False)
-            self.correct == False
 
     def senddf(self):
         df = pd.DataFrame({"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"time":[datetime.datetime.now()]})
