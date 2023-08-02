@@ -15,6 +15,8 @@ highO = 7
 Octaves = list(range(lowO,highO+1))
 Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
+
+
 class Player(object):
     def __init__(self,instrument, *args, **kwargs):
         self.instrument = instrument
@@ -64,8 +66,9 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.setWindowTitle("Perfect Pitch Training")
         self.random_note = randrange(12 * lowO,12*highO)
-        self.guess = None
         self.correct = None
+        self.pacount = 0 
+
         self.player = Player(1)    
 
         mainLayout = QVBoxLayout()
@@ -98,7 +101,19 @@ class MainWindow(QMainWindow):
             self.mybg.addButton(buttontemp1,i)
 
             #self.mybg.button(i).pressed.connect(lambda i=i : self.mybg.button(i).changecolor(i,self.random_note))
-            self.mybg.button(i).released.connect(lambda i=i : self.mybg.button(i).broadNote.connect(self.check))
+            #self.mybg.button(i).released.connect(lambda i=i : self.mybg.button(i).broadNote.connect(self.check))
+        self.mybg.button(0).broadNote.connect(self.check)
+        self.mybg.button(1).broadNote.connect(self.check)
+        self.mybg.button(2).broadNote.connect(self.check)
+        self.mybg.button(3).broadNote.connect(self.check)
+        self.mybg.button(4).broadNote.connect(self.check)
+        self.mybg.button(5).broadNote.connect(self.check)
+        self.mybg.button(6).broadNote.connect(self.check)
+        self.mybg.button(7).broadNote.connect(self.check)
+        self.mybg.button(8).broadNote.connect(self.check)
+        self.mybg.button(9).broadNote.connect(self.check)
+        self.mybg.button(10).broadNote.connect(self.check)
+        self.mybg.button(11).broadNote.connect(self.check)
 
         for j in range(lowO, highO + 1):
             for i in range(12):
@@ -119,21 +134,23 @@ class MainWindow(QMainWindow):
 
     def playagain(self):
         self.player.play(self.random_note)
+        self.pacount += 1
 
     def check(self,note):
+        self.guess = note
         self.senddf()
         if self.random_note % 12 == note:
             print("correct")
             ## reset
             for i in range(12):
                 self.mybg.button(i).reset()
-            
+            self.pacount = 0
             self.playnext()
         else:
             self.mybg.button(note).setEnabled(False)
 
     def senddf(self):
-        df = pd.DataFrame({"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"time":[datetime.datetime.now()]})
+        df = pd.DataFrame({"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"PlayAgainCount":[self.pacount],"time":[datetime.datetime.now()]})
         df.to_csv('data.csv', mode='a', header=False,index=None)
 
 
