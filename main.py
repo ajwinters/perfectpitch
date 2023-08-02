@@ -15,8 +15,6 @@ highO = 7
 Octaves = list(range(lowO,highO+1))
 Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
-
-
 class Player(object):
     def __init__(self,instrument, *args, **kwargs):
         self.instrument = instrument
