@@ -69,6 +69,11 @@ class MainWindow(QMainWindow):
         self.correct = None
         self.pacount = 0 
 
+        self.totalcount = 0 
+        self.firsttry = 0
+        self.firstguess = True
+
+
         self.player = Player(1)    
 
         mainLayout = QVBoxLayout()
@@ -118,7 +123,7 @@ class MainWindow(QMainWindow):
         for j in range(lowO, highO + 1):
             for i in range(12):
                 buttontemp = PlayBoardButton(i, j)
-                buttonLayout.addWidget(buttontemp, i, j)
+                buttonLayout.addWidget(buttontemp, j, i)
                 buttontemp.playNote.connect(self.player.play)
 
         
@@ -128,9 +133,8 @@ class MainWindow(QMainWindow):
 
     def playnext(self):
         self.random_note = randrange(12 * lowO,12*highO)
-        self.random_note = 48
         self.player.play(self.random_note)
-        print(Notes[self.random_note%12])
+        #print(Notes[self.random_note%12])
 
     def playagain(self):
         self.player.play(self.random_note)
@@ -144,9 +148,16 @@ class MainWindow(QMainWindow):
             ## reset
             for i in range(12):
                 self.mybg.button(i).reset()
+            if self.firstguess:
+                self.firsttry += 1
+            self.totalcount += 1
             self.pacount = 0
+            self.firstguess = True
+            print(f"{self.firsttry}/{self.totalcount}")
+
             self.playnext()
         else:
+            self.firstguess = False
             self.mybg.button(note).setEnabled(False)
 
     def senddf(self):
@@ -157,4 +168,5 @@ class MainWindow(QMainWindow):
 app = QApplication(sys.argv)
 w = MainWindow()
 w.show()
+w.player.play(w.random_note)
 app.exec()

@@ -1,0 +1,35 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+
+1. likilihood of getting a note correct based off distance from last note
+2. liklihood of getting a note correct based on how long ago the same note of any octave was played
+3. average correct on first guess 
+4. average number of guesses per attempt over time
+5. more correct guesses as the session goes on
+6. notes which are most likely to get correct
+
+
+
+```{r}
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
