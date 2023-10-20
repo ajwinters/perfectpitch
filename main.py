@@ -7,6 +7,7 @@ import time
 from PyQt5.QtCore import *
 from PyQt5.QtGui  import *
 from PyQt5.QtWidgets import *
+import random
 from random import randrange
 import datetime;
 
@@ -14,8 +15,9 @@ lowO= 2
 highO = 7
 Octaves = list(range(lowO,highO+1))
 Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
-
-
+groupsel = ["C","D","E","F","G","A","B"]
+groupind = [Notes.index(i) for i in groupsel if i in Notes]
+slots = len(groupind)
 
 class Player(object):
     def __init__(self,instrument, *args, **kwargs):
@@ -65,7 +67,14 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setWindowTitle("Perfect Pitch Training")
-        self.random_note = randrange(12 * lowO,12*highO)
+        self.randomrange = randrange(12 * lowO, 12*highO)
+        self.tl = []
+        for i in range(lowO,highO):
+            ttl = [12*i+j for j in groupind]
+            self.tl = self.tl + ttl
+        print(self.tl)
+        self.random_note = random.choice(self.tl)
+
         self.correct = None
         self.pacount = 0 
 
@@ -132,7 +141,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
 
     def playnext(self):
-        self.random_note = randrange(12 * lowO,12*highO)
+        self.random_note = random.choice(self.tl)
         self.player.play(self.random_note)
         #print(Notes[self.random_note%12])
 
@@ -161,8 +170,8 @@ class MainWindow(QMainWindow):
             self.mybg.button(note).setEnabled(False)
 
     def senddf(self):
-        df = pd.DataFrame({"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"PlayAgainCount":[self.pacount],"time":[datetime.datetime.now()]})
-        df.to_csv(r'C:\Users\Alex\Projects\perfectpitch\data.csv', mode='a', header=False,index=None)
+        df = pd.DataFrame({"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"PlayAgainCount":[self.pacount],"time":[datetime.datetime.now()],"grouping":[groupsel]})
+        df.to_csv(r'C:\Users\Alex\Projects\perfectpitch\data_v2.csv', mode='a', header=False,index=None)
 
 
 app = QApplication(sys.argv)

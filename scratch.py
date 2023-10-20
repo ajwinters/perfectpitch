@@ -3,20 +3,22 @@ import datetime
 
 
 # using datetime module
-import datetime;
+import datetime
+import random
 
 
-print(len([1,2,3,4]))
+# self.randomrange = randrange(12 * lowO, 12*highO)
+#         self.tl = groupind
+#         for i in range(lowO,highO):
+#             ttl = [j * 12 for j in groupind]
+#             self.tl.append(ttl)
+#         print(self.tl)
 
-self.mybg.button(0).broadNote.connect(self.check)
-self.mybg.button(1).broadNote.connect(self.check)
-self.mybg.button(2).broadNote.connect(self.check)
-self.mybg.button(3).broadNote.connect(self.check)
-self.mybg.button(4).broadNote.connect(self.check)
-self.mybg.button(5).broadNote.connect(self.check)
-self.mybg.button(6).broadNote.connect(self.check)
-self.mybg.button(7).broadNote.connect(self.check)
-self.mybg.button(8).broadNote.connect(self.check)
-self.mybg.button(9).broadNote.connect(self.check)
-self.mybg.button(10).broadNote.connect(self.check)
-self.mybg.button(11).broadNote.connect(self.check)
+lowO = 4
+highO = 8 
+
+xl = [0,3,4,7,8]
+
+for i in range(lowO,highO):
+    ttl = [12*i+j for j in xl]
+    print(ttl)
