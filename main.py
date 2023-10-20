@@ -162,7 +162,7 @@ class MainWindow(QMainWindow):
 
     def senddf(self):
         df = pd.DataFrame({"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"PlayAgainCount":[self.pacount],"time":[datetime.datetime.now()]})
-        df.to_csv('data.csv', mode='a', header=False,index=None)
+        df.to_csv(r'C:\Users\Alex\Projects\perfectpitch\data.csv', mode='a', header=False,index=None)
 
 
 app = QApplication(sys.argv)
