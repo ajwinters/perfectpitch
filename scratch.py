@@ -14,11 +14,5 @@ import random
 #             self.tl.append(ttl)
 #         print(self.tl)
 
-lowO = 4
-highO = 8 
-
-xl = [0,3,4,7,8]
-
-for i in range(lowO,highO):
-    ttl = [12*i+j for j in xl]
-    print(ttl)
+myd = {"1":1,"2":2}
+print(myd.get(1))

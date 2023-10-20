@@ -15,8 +15,9 @@ lowO= 2
 highO = 7
 Octaves = list(range(lowO,highO+1))
 Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
-groupsel = ["C","D","E","F","G","A","B"]
-groupind = [Notes.index(i) for i in groupsel if i in Notes]
+selection = "C Major"
+groupsel = {"C Major":["C","D","E","F","G","A","B"]}
+groupind = [Notes.index(i) for i in groupsel["C Major"] if i in Notes]
 slots = len(groupind)
 
 class Player(object):
@@ -109,25 +110,27 @@ class MainWindow(QMainWindow):
 
         self.mybg = QButtonGroup(mainLayout)
 
-        for i in range(12):
+        for i in groupind:
             buttontemp1 = ChoiceButton(i)
             layoutpicks.addWidget(buttontemp1)
             self.mybg.addButton(buttontemp1,i)
 
             #self.mybg.button(i).pressed.connect(lambda i=i : self.mybg.button(i).changecolor(i,self.random_note))
             #self.mybg.button(i).released.connect(lambda i=i : self.mybg.button(i).broadNote.connect(self.check))
-        self.mybg.button(0).broadNote.connect(self.check)
-        self.mybg.button(1).broadNote.connect(self.check)
-        self.mybg.button(2).broadNote.connect(self.check)
-        self.mybg.button(3).broadNote.connect(self.check)
-        self.mybg.button(4).broadNote.connect(self.check)
-        self.mybg.button(5).broadNote.connect(self.check)
-        self.mybg.button(6).broadNote.connect(self.check)
-        self.mybg.button(7).broadNote.connect(self.check)
-        self.mybg.button(8).broadNote.connect(self.check)
-        self.mybg.button(9).broadNote.connect(self.check)
-        self.mybg.button(10).broadNote.connect(self.check)
-        self.mybg.button(11).broadNote.connect(self.check)
+        for i in groupind:
+            self.mybg.button(i).broadNote.connect(self.check)
+        # self.mybg.button(0).broadNote.connect(self.check)
+        # self.mybg.button(1).broadNote.connect(self.check)
+        # self.mybg.button(2).broadNote.connect(self.check)
+        # self.mybg.button(3).broadNote.connect(self.check)
+        # self.mybg.button(4).broadNote.connect(self.check)
+        # self.mybg.button(5).broadNote.connect(self.check)
+        # self.mybg.button(6).broadNote.connect(self.check)
+        # self.mybg.button(7).broadNote.connect(self.check)
+        # self.mybg.button(8).broadNote.connect(self.check)
+        # self.mybg.button(9).broadNote.connect(self.check)
+        # self.mybg.button(10).broadNote.connect(self.check)
+        # self.mybg.button(11).broadNote.connect(self.check)
 
         for j in range(lowO, highO + 1):
             for i in range(12):
@@ -155,7 +158,7 @@ class MainWindow(QMainWindow):
         if self.random_note % 12 == note:
             print("correct")
             ## reset
-            for i in range(12):
+            for i in groupind:
                 self.mybg.button(i).reset()
             if self.firstguess:
                 self.firsttry += 1
@@ -170,7 +173,7 @@ class MainWindow(QMainWindow):
             self.mybg.button(note).setEnabled(False)
 
     def senddf(self):
-        df = pd.DataFrame({"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"PlayAgainCount":[self.pacount],"time":[datetime.datetime.now()],"grouping":[groupsel]})
+        df = pd.DataFrame({"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"PlayAgainCount":[self.pacount],"time":[datetime.datetime.now()],"grouping":selection})
         df.to_csv(r'C:\Users\Alex\Projects\perfectpitch\data_v2.csv', mode='a', header=False,index=None)
 
 
