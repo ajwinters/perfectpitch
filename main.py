@@ -9,15 +9,26 @@ from PyQt5.QtGui  import *
 from PyQt5.QtWidgets import *
 import random
 from random import randrange
-import datetime;
+import datetime
+import uuid
 
 lowO= 2
 highO = 7
 Octaves = list(range(lowO,highO+1))
 Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
-selection = "C Major"
-groupsel = {"C Major":["C","D","E","F","G","A","B"]}
-groupind = [Notes.index(i) for i in groupsel["C Major"] if i in Notes]
+
+random_amount = 4
+random_select = "Random%s" % random_amount
+
+selection = random_select
+groupsel = {"C Major":["C","D","E","F","G","A","B"],
+            "Standard Tuning":["E","A","D","G","B"],
+            random_select:random.sample(set(Notes),random_amount)}
+
+grouplist = sorted(groupsel[selection])
+groupind = [Notes.index(i) for i in grouplist if i in Notes]
+
+print(grouplist)
 slots = len(groupind)
 
 class Player(object):
@@ -73,7 +84,6 @@ class MainWindow(QMainWindow):
         for i in range(lowO,highO):
             ttl = [12*i+j for j in groupind]
             self.tl = self.tl + ttl
-        print(self.tl)
         self.random_note = random.choice(self.tl)
 
         self.correct = None
@@ -82,6 +92,7 @@ class MainWindow(QMainWindow):
         self.totalcount = 0 
         self.firsttry = 0
         self.firstguess = True
+        self.taskid = uuid.uuid1()
 
 
         self.player = Player(1)    
@@ -165,6 +176,7 @@ class MainWindow(QMainWindow):
             self.totalcount += 1
             self.pacount = 0
             self.firstguess = True
+            self.taskid = uuid.uuid1()
             print(f"{self.firsttry}/{self.totalcount}")
 
             self.playnext()
@@ -173,9 +185,9 @@ class MainWindow(QMainWindow):
             self.mybg.button(note).setEnabled(False)
 
     def senddf(self):
-        df = pd.DataFrame({"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"PlayAgainCount":[self.pacount],"time":[datetime.datetime.now()],"grouping":selection})
+        df = pd.DataFrame({"ID":[self.taskid],"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"PlayAgainCount":[self.pacount],"time":[datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")],"grouping":selection,"Notes":[grouplist],"NotesIndex":[groupind]})
         df.to_csv(r'C:\Users\Alex\Projects\perfectpitch\data_v2.csv', mode='a', header=False,index=None)
-
+        pass
 
 app = QApplication(sys.argv)
 w = MainWindow()

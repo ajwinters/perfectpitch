@@ -5,6 +5,7 @@ import datetime
 # using datetime module
 import datetime
 import random
+import uuid
 
 
 # self.randomrange = randrange(12 * lowO, 12*highO)
@@ -14,5 +15,4 @@ import random
 #             self.tl.append(ttl)
 #         print(self.tl)
 
-myd = {"1":1,"2":2}
-print(myd.get(1))
+print(uuid.uuid1())
