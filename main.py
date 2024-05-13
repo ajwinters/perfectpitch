@@ -17,7 +17,7 @@ highO = 7
 Octaves = list(range(lowO,highO+1))
 Notes = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]
 
-random_amount = 4
+random_amount = 3
 random_select = "Random%s" % random_amount
 
 selection = random_select

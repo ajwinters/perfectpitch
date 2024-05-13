@@ -1,6 +1,6 @@
 import pandas as pd
 import datetime 
-
+import numpy as np
 
 # using datetime module
 import datetime
@@ -8,11 +8,11 @@ import random
 import uuid
 
 
-# self.randomrange = randrange(12 * lowO, 12*highO)
-#         self.tl = groupind
-#         for i in range(lowO,highO):
-#             ttl = [j * 12 for j in groupind]
-#             self.tl.append(ttl)
-#         print(self.tl)
+x = 19.75
+y = 15.25
 
-print(uuid.uuid1())
+il = np.arange(1,20,.25)
+
+df = pd.DataFrame(data={"range":il,"number of cuts": x/il})
+
+print(df)

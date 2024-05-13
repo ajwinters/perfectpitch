@@ -11,21 +11,34 @@ output: html_notebook
 5. more correct guesses as the session goes on
 6. notes which are most likely to get correct
 
-
-
 ```{r}
-
+library(lubridate)
 ```
 
 
 
+```{r}
+df <- read.csv("C:/Users/Alex/Projects/perfectpitch/data_v2.csv")
+
+```
+
+
+```{r}
+df$Note <- df$CorrectNote %% 12
+df$timestamp <- as.POSIXct(df$time,format =  "%m/%d/%Y %H:%M")
+df$date <- as.Date(df$time,format =  "%m/%d/%Y %H:%M")
+
+```
+
+```{r}
+df
+```
 
 
 
-
-
-
-
+```{r}
+df
+```
 
 
 
