@@ -15,4 +15,4 @@ il = np.arange(1,20,.25)
 
 df = pd.DataFrame(data={"range":il,"number of cuts": x/il})
 
-print(df)
+print({"sdf":[random.sample(set(["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"]),3)]})

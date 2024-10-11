@@ -23,9 +23,9 @@ random_select = "Random%s" % random_amount
 selection = random_select
 groupsel = {"C Major":["C","D","E","F","G","A","B"],
             "Standard Tuning":["E","A","D","G","B"],
-            random_select:random.sample(set(Notes),random_amount)}
+            random_select:random.sample(Notes,random_amount)}
 
-grouplist = sorted(groupsel[selection])
+grouplist = sorted(groupsel[random_select])
 groupind = [Notes.index(i) for i in grouplist if i in Notes]
 
 print(grouplist)
@@ -186,7 +186,7 @@ class MainWindow(QMainWindow):
 
     def senddf(self):
         df = pd.DataFrame({"ID":[self.taskid],"CorrectNote":[self.random_note],"SelectedNote":[self.guess],"PlayAgainCount":[self.pacount],"time":[datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")],"grouping":selection,"Notes":[grouplist],"NotesIndex":[groupind]})
-        df.to_csv(r'C:\Users\Alex\Projects\perfectpitch\data_v2.csv', mode='a', header=False,index=None)
+        df.to_csv(r'.\data\data_v2.csv', mode='a', header=False,index=None)
         pass
 
 app = QApplication(sys.argv)
