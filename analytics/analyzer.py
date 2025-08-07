@@ -2,6 +2,10 @@
 Basic analytics and visualization tools for Perfect Pitch Training data.
 """
 
+import warnings
+# Suppress NumPy version warnings from SciPy/Seaborn
+warnings.filterwarnings('ignore', category=UserWarning, module='seaborn')
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -26,12 +30,22 @@ class PitchTrainingAnalyzer:
     def load_data(self):
         """Load training data from CSV file."""
         try:
-            self.data = pd.read_csv(self.data_file)
-            self.data['timestamp'] = pd.to_datetime(self.data['timestamp'])
-            print(f"Loaded {len(self.data)} training records")
-        except FileNotFoundError:
-            print(f"Data file {self.data_file} not found")
-            self.data = pd.DataFrame()
+            if Path(self.data_file).exists():
+                self.data = pd.read_csv(self.data_file)
+                if not self.data.empty:
+                    self.data['timestamp'] = pd.to_datetime(self.data['timestamp'])
+                    print(f"Loaded {len(self.data)} training records from {self.data_file}")
+                else:
+                    print(f"Data file {self.data_file} is empty")
+                    self.data = pd.DataFrame()
+            else:
+                print(f"Data file {self.data_file} not found")
+                print("Available data files in data directory:")
+                data_dir = Path("data")
+                if data_dir.exists():
+                    for file in data_dir.glob("*.csv"):
+                        print(f"  - {file}")
+                self.data = pd.DataFrame()
         except Exception as e:
             print(f"Error loading data: {e}")
             self.data = pd.DataFrame()
@@ -140,7 +154,7 @@ class PitchTrainingAnalyzer:
         )
         
         # Reorder notes to chromatic order
-        from src.config import NOTES
+        NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
         heatmap_data = heatmap_data.reindex(NOTES)
         
         # Create heatmap
